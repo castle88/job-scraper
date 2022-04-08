@@ -76,17 +76,30 @@ const createLink = async (link) => {
 const updateLinks = async () => {
   try {
     const links = await Job.find();
-    
-  } catch (err) {const links = await Job.find()
-	console.log(links)
+    if (!links) {
+      throw new Error("no links found");
+    }
+
+    // console.log(links);
+
+    links.forEach(async (link) => {
+      const shrinkLink = await axios.post(
+        "https://shrinkenator.herokuapp.com/api/link",
+        {
+          url: link.link,
+          name: link._id,
+        }
+      );
+
+      await Job.findByIdAndUpdate(link._id, {
+        link: `https://shrinkenator.herokuapp.com/${link._id}`,
+      });
+    });
+
+    console.log("done update");
+  } catch (err) {
     console.log(err);
   }
 };
 
 addData();
-
-// https://www.indeed.com/q-web-development-l-New-York,-NY-jobs.html
-// https://www.indeed.com/jobs?q=web+development&l=New+York,+NY&remotejob=032b3046-06a3-4876-8dfd-474eb5e7ed11
-// https://www.indeed.com/jobs?q=web%20development&l&vjk=d775ef36fd90cfbc
-
-// https://www.indeed.com/jobs?q=web%20development&remotejob=032b3046-06a3-4876-8dfd-474eb5e7ed11&vjk=b56679283ea5f012
