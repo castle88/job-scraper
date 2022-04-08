@@ -6,6 +6,8 @@ const addData = require("./services/data-interactions");
 
 connectDB();
 
-cron.schedule("0 7,16 * * *", () => {
+// addData();
+
+cron.schedule("0 * * * *", () => {
   addData();
 });

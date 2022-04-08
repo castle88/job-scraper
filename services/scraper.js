@@ -33,6 +33,8 @@ const scrapeJobs = async () => {
       }
     );
 
+    // console.log(links);
+
     return links;
   } catch (err) {
     console.log(err);

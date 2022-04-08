@@ -6,13 +6,14 @@ const scrapeJobs = require("./scraper");
 const addData = async () => {
   try {
     const links = await scrapeJobs();
+
+    console.log("scrape start");
+
     links.forEach(async (link) => {
       await createLink(link);
     });
 
-    console.log(`updating on ${makeDate()}`);
-
-    updateLinks();
+    console.log(`updated on ${makeDate()}`);
   } catch (err) {
     console.log(err);
   }
@@ -25,37 +26,24 @@ const createLink = async (link) => {
     });
     //     console.log(dupe);
     if (!dupe) {
-      Job.create({ ...link, createdAt: `${makeDate()}` });
+      const newLink = await Job.create({ ...link, createdAt: `${makeDate()}` });
+      await updateLink(newLink);
     }
   } catch (err) {
     console.log(err);
   }
 };
 
-const updateLinks = async () => {
+const updateLink = async (link) => {
   try {
-    const links = await Job.find();
-    if (!links) {
-      throw new Error("no links found");
-    }
-
-    // console.log(links);
-
-    links.forEach(async (link) => {
-      const shrinkLink = await axios.post(
-        "https://shrinkenator.herokuapp.com/api/link",
-        {
-          url: link.link,
-          name: link._id,
-        }
-      );
-
-      await Job.findByIdAndUpdate(link._id, {
-        link: `https://shrinkenator.herokuapp.com/${link._id}`,
-      });
+    await axios.post("https://shrinkenator.herokuapp.com/api/link", {
+      url: link.link,
+      name: link._id,
     });
 
-    console.log(`updated on ${makeDate()}`);
+    await Job.findByIdAndUpdate(link._id, {
+      link: `https://shrinkenator.herokuapp.com/${link._id}`,
+    });
   } catch (err) {
     console.log(err);
   }
