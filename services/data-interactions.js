@@ -62,7 +62,7 @@ const getJobs = async () => {
   }
 };
 
-const formatMessage = async () => {
+const jobCommand = async () => {
   try {
     const jobs = await getJobs();
     const jobjectToStr = jobs.map(
@@ -70,8 +70,17 @@ const formatMessage = async () => {
         `company: ${job.companyName}\ntitle: ${job.title}\nurl: ${job.link}\ndate collected: ${job.createdAt}\n\n`
     );
 
-    // return jobjectToStr.join("");
-    return jobjectToStr.slice(0, 5).join("");
+    return jobjectToStr;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const formatMessage = async () => {
+  try {
+    const jobs = await jobCommand();
+
+    return jobs.slice(0, 5).join("");
   } catch (err) {
     console.log(err);
   }
@@ -86,4 +95,4 @@ const makeDate = () => {
   return `${month}/${day}/${year}`;
 };
 
-module.exports = { addData, formatMessage };
+module.exports = { addData, formatMessage, jobCommand };
