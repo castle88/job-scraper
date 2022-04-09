@@ -28,7 +28,12 @@ const scrapeJobs = async () => {
         const companyName = job.querySelector("span.companyName").textContent;
         const companyLocation =
           job.querySelector(".companyLocation").textContent;
-        const link = "www.indeed.com" + job.attributes["href"].textContent;
+        const link =
+          "www.indeed.com/viewjob?jk=" +
+          job.attributes["id"].textContent.split("_")[1];
+
+        // console.log(link);
+
         return { title, companyName, companyLocation, link };
       }
     );
