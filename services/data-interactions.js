@@ -90,6 +90,23 @@ const formatMessage = async () => {
   }
 };
 
+const getJobsByDay = async (date) => {
+  try {
+    const jobs = await Job.find({ createdAt: date });
+    if (!jobs || jobs.length <= 0) {
+      return `Bammer, no jobs available on ${date}`;
+    }
+
+    const formatJobs = jobs.map(
+      (job) =>
+        `company: ${job.companyName}\ntitle: ${job.title}\nurl: ${job.link}\ndate collected: ${job.createdAt}\n\n`
+    );
+    return formatJobs;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 const makeDate = () => {
   const now = new Date();
   const month = now.getMonth() + 1;
@@ -99,4 +116,4 @@ const makeDate = () => {
   return `${month}/${day}/${year}`;
 };
 
-module.exports = { addData, formatMessage, jobCommand };
+module.exports = { addData, formatMessage, jobCommand, getJobsByDay };

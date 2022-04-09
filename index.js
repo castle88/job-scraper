@@ -9,6 +9,7 @@ const {
   addData,
   formatMessage,
   jobCommand,
+  getJobsByDay,
 } = require("./services/data-interactions");
 
 connectDB();
@@ -29,11 +30,29 @@ client.on("messageCreate", async (msg) => {
       return msg.reply("hello");
     }
 
+    // all jobs for day of query
     if (msg.content === "!jobs") {
       const jobs = await jobCommand();
       if (!jobs || jobs.length < 1) return msg.reply("bammer no jobs yet!");
 
       jobs.forEach((job) => msg.reply(job));
+      // jobs.forEach((job) => console.log(job));
+    }
+
+    // specific day query
+    if (msg.content.split(" ")[0] === "!day") {
+      // console.log(msg.content.split(" "));
+      const dayQuery = msg.content.split(" ")[1];
+      // console.log(dayQuery);
+      const jobs = await getJobsByDay(dayQuery);
+      if (typeof jobs === "string") {
+        return msg.reply(jobs);
+        // console.log(jobs);
+      } else {
+        // jobs.forEach((job) => msg.reply(job));
+        msg.reply(jobs.reverse().slice(0, 5).join(""));
+        // jobs.forEach((job) => console.log(job));
+      }
     }
   } catch (err) {
     console.log(err);
