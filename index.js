@@ -5,7 +5,7 @@ const token = process.env.TOKEN;
 const { Client, Intents } = require("discord.js");
 
 const connectDB = require("./config/database");
-const addData = require("./services/data-interactions");
+const { addData, formatMessage } = require("./services/data-interactions");
 
 connectDB();
 
@@ -23,3 +23,12 @@ client.login(token);
 cron.schedule("0 * * * *", () => {
   addData();
 });
+
+cron.schedule("* * * * *", async () => {
+  const channel = client.channels.cache.get("962138514613477396");
+  // channel.send();
+  const jobs = await formatMessage();
+  channel.send(jobs);
+});
+
+// formatMessage();

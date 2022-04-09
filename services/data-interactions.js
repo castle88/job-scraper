@@ -49,6 +49,34 @@ const updateLink = async (link) => {
   }
 };
 
+const getJobs = async () => {
+  try {
+    const today = makeDate();
+    const jobs = await Job.find({ createdAt: today });
+
+    // console.log(jobs);
+
+    return jobs;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const formatMessage = async () => {
+  try {
+    const jobs = await getJobs();
+    const jobjectToStr = jobs.map(
+      (job) =>
+        `company: ${job.companyName}\ntitle: ${job.title}\nurl: ${job.link}\ndate collected: ${job.createdAt}\n\n`
+    );
+
+    // return jobjectToStr.join("");
+    return jobjectToStr.slice(0, 5).join("");
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 const makeDate = () => {
   const now = new Date();
   const month = now.getMonth() + 1;
@@ -58,4 +86,4 @@ const makeDate = () => {
   return `${month}/${day}/${year}`;
 };
 
-module.exports = addData;
+module.exports = { addData, formatMessage };
