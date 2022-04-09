@@ -30,9 +30,9 @@ client.on("messageCreate", async (msg) => {
 
     if (msg.content === "!jobs") {
       const jobs = await jobCommand();
-      jobs.forEach((job) => {
-        return msg.reply(job);
-      });
+      if (!jobs || jobs.length < 1) return msg.reply("bammer no jobs yet!");
+
+      jobs.forEach((job) => msg.reply(job));
     }
   } catch (err) {
     console.log(err);
@@ -46,8 +46,8 @@ cron.schedule("0 * * * *", () => {
   addData();
 });
 
-// cron.schedule("0 7,9,12,15,18,21 * * *", async () => {
-cron.schedule("* * * * *", async () => {
+cron.schedule("0 7,9,12,15,18,21 * * *", async () => {
+  // cron.schedule("* * * * *", async () => {
   try {
     const channel = client.channels.cache.get("962138514613477396");
     // channel.send();
