@@ -10,6 +10,7 @@ const {
   formatMessage,
   jobCommand,
 } = require("./services/data-interactions");
+
 connectDB();
 
 // Create a new client instance

@@ -34,6 +34,7 @@ const createLink = async (link) => {
   }
 };
 
+// update job posting link to shrink link
 const updateLink = async (link) => {
   try {
     await axios.post("https://shrinkenator.herokuapp.com/api/link", {
@@ -49,6 +50,7 @@ const updateLink = async (link) => {
   }
 };
 
+// return array of job objects
 const getJobs = async () => {
   try {
     const today = makeDate();
@@ -62,6 +64,7 @@ const getJobs = async () => {
   }
 };
 
+// convert todays job objects to discord bot strings
 const jobCommand = async () => {
   try {
     const jobs = await getJobs();
@@ -76,6 +79,7 @@ const jobCommand = async () => {
   }
 };
 
+// auto message first 5 items in array
 const formatMessage = async () => {
   try {
     const jobs = await jobCommand();
