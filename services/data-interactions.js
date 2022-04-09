@@ -73,7 +73,7 @@ const jobCommand = async () => {
         `company: ${job.companyName}\ntitle: ${job.title}\nurl: ${job.link}\ndate collected: ${job.createdAt}\n\n`
     );
 
-    return jobjectToStr;
+    return jobjectToStr.reverse();
   } catch (err) {
     console.log(err);
   }
