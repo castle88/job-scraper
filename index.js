@@ -19,6 +19,9 @@ const client = new Client({ intents: ["GUILDS", "GUILD_MESSAGES"] });
 // When the client is ready, run this code (only once)
 client.once("ready", () => {
   console.log("Ready!");
+
+  // const channel = client.channels.cache.get();
+  // console.log(channel);
 });
 
 client.on("messageCreate", async (msg) => {
@@ -50,7 +53,7 @@ cron.schedule("0 * * * *", () => {
 cron.schedule("0 7,9,12,15,18,21 * * *", async () => {
   // cron.schedule("* * * * *", async () => {
   try {
-    const channel = client.channels.cache.get("962138514613477396");
+    const channel = client.channels.cache.get("962440240478425148");
     // channel.send();
     const jobs = await formatMessage();
     channel.send(jobs);
