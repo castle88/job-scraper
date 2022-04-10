@@ -62,19 +62,19 @@ client.on("messageCreate", async (msg) => {
 // Login to Discord with your client's token
 client.login(token);
 
-cron.schedule("* * * * *", async () => {
+cron.schedule("0 * * * *", async () => {
   console.log("scraping");
   await addData();
 });
 
-// cron.schedule("0 7,9,12,15,18,21 * * *", async () => {
-//   // cron.schedule("* * * * *", async () => {
-//   try {
-//     const channel = client.channels.cache.get("962442426075709540");
-//     // channel.send();
-//     const jobs = await formatMessage();
-//     channel.send(jobs);
-//   } catch (err) {
-//     console.log(err);
-//   }
-// });
+cron.schedule("0 7,9,12,15,18,21 * * *", async () => {
+  // cron.schedule("* * * * *", async () => {
+  try {
+    const channel = client.channels.cache.get("962442426075709540");
+    // channel.send();
+    const jobs = await formatMessage();
+    channel.send(jobs);
+  } catch (err) {
+    console.log(err);
+  }
+});
