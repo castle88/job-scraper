@@ -4,15 +4,12 @@ const token = process.env.TOKEN;
 
 const { Client } = require("discord.js");
 
-const connectDB = require("./config/database");
 const {
   addData,
   formatMessage,
   jobCommand,
   getJobsByDay,
 } = require("./services/data-interactions");
-
-connectDB();
 
 // Create a new client instance
 const client = new Client({ intents: ["GUILDS", "GUILD_MESSAGES"] });
@@ -62,13 +59,13 @@ client.on("messageCreate", async (msg) => {
 // Login to Discord with your client's token
 client.login(token);
 
-cron.schedule("0 * * * *", async () => {
+cron.schedule("* * * * *", async () => {
   console.log("scraping");
   await addData();
 });
 
-cron.schedule("0 7,9,12,15,18,21 * * *", async () => {
-  // cron.schedule("* * * * *", async () => {
+// cron.schedule("0 7,9,12,15,18,21 * * *", async () => {
+cron.schedule("* * * * *", async () => {
   try {
     const channel = client.channels.cache.get("962442426075709540");
     // channel.send();

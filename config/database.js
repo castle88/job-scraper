@@ -1,17 +1,11 @@
-const mongoose = require('mongoose')
+const Sequelize = require("sequelize").Sequelize;
+const { PG_USER, PG_HOST, PG_DATABASE, PG_PW, PG_PORT } = process.env;
 
-const connectDB = async () => {
-	try{
-		const conn = await mongoose.connect(process.env.MONGODB_URI, {
-			useUnifiedTopology: true,
-			useNewUrlParser: true 
-		})
-
-		console.log(`MongoDB connected\n${conn.connection.host}`)
-	}catch(err){
-		console.error(err)
-		process.exit(1)
-	}
-}
-
-module.exports = connectDB
+module.exports = new Sequelize({
+  dialect: "postgres",
+  host: PG_HOST,
+  port: PG_PORT,
+  database: PG_DATABASE,
+  username: PG_USER,
+  password: PG_PW,
+});
