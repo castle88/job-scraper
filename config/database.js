@@ -1,11 +1,11 @@
-const Sequelize = require("sequelize").Sequelize;
-const { PG_USER, PG_HOST, PG_DATABASE, PG_PW, PG_PORT } = process.env;
+const Pool = require("pg").Pool;
 
-module.exports = new Sequelize({
-  dialect: "postgres",
-  host: PG_HOST,
-  port: PG_PORT,
-  database: PG_DATABASE,
-  username: PG_USER,
-  password: PG_PW,
+const pool = new Pool({
+  user: process.env.PG_USER,
+  password: process.env.PG_PW,
+  host: process.env.PG_HOST,
+  port: process.env.DB_PORT,
+  database: process.env.PG_DATABASE,
 });
+
+module.exports = pool;

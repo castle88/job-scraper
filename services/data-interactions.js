@@ -1,8 +1,5 @@
 const axios = require("axios");
-
-const { Job, JobMap } = require("../models/Jobs");
-const database = require("../config/database");
-
+const pool = require("../config/database");
 const scrapeJobs = require("./scraper");
 
 const addData = async () => {
@@ -23,15 +20,22 @@ const addData = async () => {
 
 const createLink = async (link) => {
   try {
-    JobMap(database);
-    const dupe = await Job.findOne({
-      where: {
-        title: link.title,
-      },
-    });
-    //     console.log(dupe);
+    const dupe = await pool.query(
+      "SELECT * FROM joblinks WHERE title = ($1) AND link = ($2)",
+      [link.title, link.link]
+    );
+    console.log(dupe);
     if (!dupe) {
-      const newLink = await Job.create({ ...link, createdAt: `${makeDate()}` });
+      const newLink = await pool.query(
+        "INSERT INTO joblinks (title, companyName, companyLocation, link, createdAt) VALUES ($1 $2$ $3 $4 $5)",
+        [
+          link.title,
+          link.companyName,
+          link.companyLocation,
+          link.link,
+          makeDate(),
+        ]
+      );
       await updateLink(newLink);
     }
   } catch (err) {
@@ -42,20 +46,19 @@ const createLink = async (link) => {
 // update job posting link to shrink link
 const updateLink = async (link) => {
   try {
-    JobMap(database);
     await axios.post("https://shrinkenator.herokuapp.com/api/link", {
       url: link.link,
       name: link._id,
     });
 
-    await Job.update(
-      { link: `https://shrinkenator.herokuapp.com/${link.id}` },
-      {
-        where: {
-          id: link.id,
-        },
-      }
-    );
+    // await Job.update(
+    //   { link: `https://shrinkenator.herokuapp.com/${link.id}` },
+    //   {
+    //     where: {
+    //       id: link.id,
+    //     },
+    //   }
+    // );
   } catch (err) {
     console.log(err);
   }
@@ -64,10 +67,11 @@ const updateLink = async (link) => {
 // return array of job objects
 const getJobs = async () => {
   try {
-    JobMap(database);
-
     const today = makeDate();
-    const jobs = await Job.findAll({ where: { createdAt: today } });
+    const jobs = await pool.query(
+      "SELECT * FROM joblinks WHERE createdAt = ($1)",
+      [today]
+    );
 
     // console.log(jobs);
 
@@ -80,8 +84,6 @@ const getJobs = async () => {
 // convert todays job objects to discord bot strings
 const jobCommand = async () => {
   try {
-    JobMap(database);
-
     const jobs = await getJobs();
     const jobjectToStr = jobs.map(
       (job) =>
@@ -97,8 +99,6 @@ const jobCommand = async () => {
 // auto message first 5 items in array
 const formatMessage = async () => {
   try {
-    JobMap(database);
-
     const jobs = await jobCommand();
 
     return jobs.slice(0, 5).join("");
@@ -109,9 +109,10 @@ const formatMessage = async () => {
 
 const getJobsByDay = async (date) => {
   try {
-    JobMap(database);
-
-    const jobs = await Job.findAll({ where: { createdAt: date } });
+    const jobs = await pool.query(
+      "SELECT * FROM joblinks WHERE createdAt = ($1)",
+      [date]
+    );
     if (!jobs || jobs.length <= 0) {
       return `Bammer, no jobs available on ${date}`;
     }
