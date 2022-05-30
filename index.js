@@ -64,7 +64,7 @@ cron.schedule("* * * * *", async () => {
   await addData();
 });
 
-// cron.schedule("0 7,9,12,15,18,21 * * *", async () => {
+// cron.schedule("0 7,9,12,15,18 * * *", async () => {
 cron.schedule("* * * * *", async () => {
   try {
     const channel = client.channels.cache.get("962442426075709540");

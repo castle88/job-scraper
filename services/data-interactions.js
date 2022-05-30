@@ -12,6 +12,9 @@ const addData = async () => {
       await createLink(link);
     });
 
+    // const data = await pool.query("SELECT * FROM jobs");
+    // console.log(data);
+
     console.log(`updated on ${makeDate()}`);
   } catch (err) {
     console.log(err);
@@ -20,23 +23,26 @@ const addData = async () => {
 
 const createLink = async (link) => {
   try {
-    const dupe = await pool.query(
-      "SELECT * FROM joblinks WHERE title = ($1) AND link = ($2)",
-      [link.title, link.link]
-    );
-    console.log(dupe);
-    if (!dupe) {
-      const newLink = await pool.query(
-        "INSERT INTO joblinks (title, companyName, companyLocation, link, createdAt) VALUES ($1 $2$ $3 $4 $5)",
+    const dupe = await pool.query("SELECT * FROM jobs WHERE id = $1;", [
+      link.id,
+    ]);
+    if (dupe.rows.length < 1) {
+      const shrinkLink = await updateLink(link);
+      const servername = shrinkLink.request.socket.servername;
+      const crushedID = shrinkLink.data.crushedLink.name;
+      // console.log("*********", shrinkLink.request.socket.servername);
+      // console.log(shrinkLink.data.crushedLink._id);
+      await pool.query(
+        "INSERT INTO jobs (id, title, company, clocation, link, createdat) VALUES ($1, $2, $3, $4, $5, $6);",
         [
+          link.id,
           link.title,
-          link.companyName,
-          link.companyLocation,
-          link.link,
+          link.company,
+          link.location,
+          `https://${servername}/${crushedID}`,
           makeDate(),
         ]
       );
-      await updateLink(newLink);
     }
   } catch (err) {
     console.log(err);
@@ -46,19 +52,16 @@ const createLink = async (link) => {
 // update job posting link to shrink link
 const updateLink = async (link) => {
   try {
-    await axios.post("https://shrinkenator.herokuapp.com/api/link", {
-      url: link.link,
-      name: link._id,
-    });
+    const newLink = await axios.post(
+      "https://shrinkenator.herokuapp.com/api/link",
+      {
+        url: link.link,
+        name: link.id,
+      }
+    );
 
-    // await Job.update(
-    //   { link: `https://shrinkenator.herokuapp.com/${link.id}` },
-    //   {
-    //     where: {
-    //       id: link.id,
-    //     },
-    //   }
-    // );
+    // console.log("************", newLink);
+    return newLink;
   } catch (err) {
     console.log(err);
   }
@@ -69,13 +72,13 @@ const getJobs = async () => {
   try {
     const today = makeDate();
     const jobs = await pool.query(
-      "SELECT * FROM joblinks WHERE createdAt = ($1)",
+      "SELECT * FROM jobs WHERE createdat = ($1);",
       [today]
     );
 
-    // console.log(jobs);
+    console.log(jobs.rows);
 
-    return jobs;
+    return jobs.rows;
   } catch (err) {
     console.log(err);
   }
@@ -87,7 +90,7 @@ const jobCommand = async () => {
     const jobs = await getJobs();
     const jobjectToStr = jobs.map(
       (job) =>
-        `company: ${job.companyName}\ntitle: ${job.title}\nurl: ${job.link}\ndate collected: ${job.createdAt}\n\n`
+        `company: ${job.company}\ntitle: ${job.title}\nurl: ${job.link}\ndate collected: ${job.createdat}\n\n`
     );
 
     return jobjectToStr.reverse();
@@ -109,17 +112,16 @@ const formatMessage = async () => {
 
 const getJobsByDay = async (date) => {
   try {
-    const jobs = await pool.query(
-      "SELECT * FROM joblinks WHERE createdAt = ($1)",
-      [date]
-    );
+    const jobs = await pool.query("SELECT * FROM jobs WHERE createdat = ($1)", [
+      date,
+    ]);
     if (!jobs || jobs.length <= 0) {
       return `Bammer, no jobs available on ${date}`;
     }
 
     const formatJobs = jobs.map(
       (job) =>
-        `company: ${job.companyName}\ntitle: ${job.title}\nurl: ${job.link}\ndate collected: ${job.createdAt}\n\n`
+        `company: ${job.company}\ntitle: ${job.title}\nurl: ${job.link}\ndate collected: ${job.createdat}\n\n`
     );
     return formatJobs;
   } catch (err) {
@@ -137,3 +139,4 @@ const makeDate = () => {
 };
 
 module.exports = { addData, formatMessage, jobCommand, getJobsByDay };
+// module.exports = { addData };

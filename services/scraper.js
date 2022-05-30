@@ -21,26 +21,26 @@ const scrapeJobs = async () => {
 
     const dom = new JSDOM(html);
     const document = dom.window.document;
-
-    const links = Array.from(document.querySelectorAll("a.tapItem")).map(
-      (job) => {
-        const title = job.querySelector("h2.jobTitle").textContent;
-        const companyName = job.querySelector("span.companyName").textContent;
-        const companyLocation =
-          job.querySelector(".companyLocation").textContent;
-        const link =
+    const jobs = Array.from(
+      document
+        .querySelector(".jobsearch-ResultsList")
+        .querySelectorAll(".resultContent")
+    ).map((link) => {
+      return {
+        id: link
+          .querySelector(".jcs-JobTitle")
+          .attributes["id"].textContent.split("_")[1],
+        company: link.querySelector(".companyName").textContent,
+        title: link.querySelector(".jcs-JobTitle").textContent,
+        link:
           "www.indeed.com/viewjob?jk=" +
-          job.attributes["id"].textContent.split("_")[1];
-
-        // console.log(link);
-
-        return { title, companyName, companyLocation, link };
-      }
-    );
-
-    // console.log(links);
-
-    return links;
+          link
+            .querySelector(".jcs-JobTitle")
+            .attributes["id"].textContent.split("_")[1],
+        location: link.querySelector(".companyLocation").textContent,
+      };
+    });
+    return jobs;
   } catch (err) {
     console.log(err);
   }
