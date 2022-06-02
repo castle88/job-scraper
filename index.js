@@ -10,68 +10,71 @@ const {
   jobCommand,
   getJobsByDay,
 } = require("./services/data-interactions");
+const scrapeJobs = require("./services/scraper");
 
-// Create a new client instance
-const client = new Client({ intents: ["GUILDS", "GUILD_MESSAGES"] });
+scrapeJobs();
 
-// When the client is ready, run this code (only once)
-client.once("ready", () => {
-  console.log("Ready!");
-});
+// // Create a new client instance
+// const client = new Client({ intents: ["GUILDS", "GUILD_MESSAGES"] });
 
-client.on("messageCreate", async (msg) => {
-  try {
-    if (msg.author.bot) return;
+// // When the client is ready, run this code (only once)
+// client.once("ready", () => {
+//   console.log("Ready!");
+// });
 
-    if (msg.content === "!sup") {
-      return msg.reply("hello");
-    }
+// client.on("messageCreate", async (msg) => {
+//   try {
+//     if (msg.author.bot) return;
 
-    // all jobs for day of query
-    if (msg.content === "!jobs") {
-      const jobs = await jobCommand();
-      if (!jobs || jobs.length < 1) return msg.reply("bammer no jobs yet!");
+//     if (msg.content === "!sup") {
+//       return msg.reply("hello");
+//     }
 
-      jobs.forEach((job) => msg.reply(job));
-      // jobs.forEach((job) => console.log(job));
-    }
+//     // all jobs for day of query
+//     if (msg.content === "!jobs") {
+//       const jobs = await jobCommand();
+//       if (!jobs || jobs.length < 1) return msg.reply("bammer no jobs yet!");
 
-    // specific day query
-    if (msg.content.split(" ")[0] === "!day") {
-      // console.log(msg.content.split(" "));
-      const dayQuery = msg.content.split(" ")[1];
-      // console.log(dayQuery);
-      const jobs = await getJobsByDay(dayQuery);
-      if (typeof jobs === "string") {
-        return msg.reply(jobs);
-        // console.log(jobs);
-      } else {
-        // jobs.forEach((job) => msg.reply(job));
-        msg.reply(jobs.reverse().slice(0, 5).join(""));
-        // jobs.forEach((job) => console.log(job));
-      }
-    }
-  } catch (err) {
-    console.log(err);
-  }
-});
+//       jobs.forEach((job) => msg.reply(job));
+//       // jobs.forEach((job) => console.log(job));
+//     }
 
-// Login to Discord with your client's token
-client.login(token);
+//     // specific day query
+//     if (msg.content.split(" ")[0] === "!day") {
+//       // console.log(msg.content.split(" "));
+//       const dayQuery = msg.content.split(" ")[1];
+//       // console.log(dayQuery);
+//       const jobs = await getJobsByDay(dayQuery);
+//       if (typeof jobs === "string") {
+//         return msg.reply(jobs);
+//         // console.log(jobs);
+//       } else {
+//         // jobs.forEach((job) => msg.reply(job));
+//         msg.reply(jobs.reverse().slice(0, 5).join(""));
+//         // jobs.forEach((job) => console.log(job));
+//       }
+//     }
+//   } catch (err) {
+//     console.log(err);
+//   }
+// });
 
-cron.schedule("* * * * *", async () => {
-  console.log("scraping");
-  await addData();
-});
+// // Login to Discord with your client's token
+// client.login(token);
 
-// cron.schedule("0 7,9,12,15,18 * * *", async () => {
-cron.schedule("* * * * *", async () => {
-  try {
-    const channel = client.channels.cache.get("962442426075709540");
-    // channel.send();
-    const jobs = await formatMessage();
-    channel.send(jobs);
-  } catch (err) {
-    console.log(err);
-  }
-});
+// cron.schedule("* * * * *", async () => {
+//   console.log("scraping");
+//   await addData();
+// });
+
+// // cron.schedule("0 7,9,12,15,18 * * *", async () => {
+// cron.schedule("* * * * *", async () => {
+//   try {
+//     const channel = client.channels.cache.get("962442426075709540");
+//     // channel.send();
+//     const jobs = await formatMessage();
+//     if (jobs.length > 0) channel.send(jobs);
+//   } catch (err) {
+//     console.log(err);
+//   }
+// });

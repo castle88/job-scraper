@@ -26,18 +26,29 @@ const scrapeJobs = async () => {
         .querySelector(".jobsearch-ResultsList")
         .querySelectorAll(".resultContent")
     ).map((link) => {
+      const jobId = link
+        .querySelector(".jcs-JobTitle")
+        .attributes["id"].textContent.split("_")[1];
+      // const companyInfo = link.querySelector(".companyInfo").textContent;
+      const jobTitle = link.querySelector(".jcs-JobTitle").textContent;
+      const companyName = link.querySelector(".companyName").textContent;
+      const companyLocation =
+        link.querySelector(".companyLocation").textContent;
+      const jobLink = "www.indeed.com/viewjob?jk=" + jobId;
+
+      // console.log("************ job ******************\n", {
+      //   jobId,
+      //   jobTitle,
+      //   companyName,
+      //   companyLocation,
+      //   jobLink,
+      // });
       return {
-        id: link
-          .querySelector(".jcs-JobTitle")
-          .attributes["id"].textContent.split("_")[1],
-        company: link.querySelector(".companyName").textContent,
-        title: link.querySelector(".jcs-JobTitle").textContent,
-        link:
-          "www.indeed.com/viewjob?jk=" +
-          link
-            .querySelector(".jcs-JobTitle")
-            .attributes["id"].textContent.split("_")[1],
-        location: link.querySelector(".companyLocation").textContent,
+        id: jobId,
+        title: jobTitle,
+        company: companyName,
+        clocation: companyLocation,
+        link: jobLink,
       };
     });
     return jobs;
